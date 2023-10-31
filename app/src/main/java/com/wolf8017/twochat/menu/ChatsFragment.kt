@@ -1,11 +1,16 @@
 package com.wolf8017.twochat.menu
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.wolf8017.twochat.R
+import com.wolf8017.twochat.adapter.ChatListAdapter
+import com.wolf8017.twochat.model.ChatList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,12 +35,30 @@ class ChatsFragment : Fragment() {
         }
     }
 
+    private var list: MutableList<ChatList> = ArrayList()
+    private lateinit var recyclerView: RecyclerView
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chats, container, false)
+        var view: View = inflater.inflate(R.layout.fragment_chats, container, false)
+
+        recyclerView = view.findViewById(R.id.recycleView_chat)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        getChatList();
+        return view
+    }
+
+    private fun getChatList() {
+        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","drawable/dangcongsan.png"))
+        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
+        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
+        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
+
+        recyclerView.adapter = ChatListAdapter(list,requireContext())
     }
 
     companion object {
