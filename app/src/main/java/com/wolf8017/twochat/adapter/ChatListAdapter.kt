@@ -44,7 +44,7 @@ class ChatListAdapter() : RecyclerView.Adapter<ChatListAdapter.Holder>() {
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        var chatlist: ChatList = list[position]
+        val chatlist: ChatList = list[position]
         holder.tvName.text = chatlist.userName
         holder.tvDesc.text = chatlist.description
         holder.tvDate.text = chatlist.date

@@ -1,7 +1,6 @@
-package com.wolf8017.twochat
+package com.wolf8017.twochat.view
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,11 +15,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.wolf8017.twochat.R
 import com.wolf8017.twochat.databinding.ActivityMainBinding
 import com.wolf8017.twochat.menu.CallsFragment
 import com.wolf8017.twochat.menu.ChatsFragment
 import com.wolf8017.twochat.menu.StatusFragment
-import kotlinx.coroutines.Runnable
 
 
 class MainActivity : AppCompatActivity() {

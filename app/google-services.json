@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "433792641699",
+    "project_id": "twochat-87b38",
+    "storage_bucket": "twochat-87b38.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:433792641699:android:b8fcab1978db44dd4ced16",
+        "android_client_info": {
+          "package_name": "com.wolf8017.twochat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBUyx2jyZDdUX5-2xupXZszyEiHGjBcy0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

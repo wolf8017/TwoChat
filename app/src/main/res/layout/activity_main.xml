@@ -4,7 +4,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            tools:context=".MainActivity">
+            tools:context=".view.MainActivity">
 
         <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/app_bar"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentEnd="true"
-                android:tint="@color/white"
+                app:tint="@color/white"
                 android:backgroundTint="@color/colorPrimary"
                 android:contentDescription="Notify Chat" android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"

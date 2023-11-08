@@ -1,6 +1,5 @@
 package com.wolf8017.twochat.menu
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -35,7 +34,7 @@ class ChatsFragment : Fragment() {
         }
     }
 
-    private var list: MutableList<ChatList> = ArrayList()
+    private var lists: MutableList<ChatList> = ArrayList()
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
@@ -43,7 +42,7 @@ class ChatsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        var view: View = inflater.inflate(R.layout.fragment_chats, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_chats, container, false)
 
         recyclerView = view.findViewById(R.id.recycleView_chat)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -53,12 +52,12 @@ class ChatsFragment : Fragment() {
     }
 
     private fun getChatList() {
-        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","drawable/dangcongsan.png"))
-        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
-        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
-        list.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
+        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","https://tuyengiao.vn/Uploads/2023/2/14/25/cats.jpg"))
+        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
+        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
+        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
 
-        recyclerView.adapter = ChatListAdapter(list,requireContext())
+        recyclerView.adapter = ChatListAdapter(lists,requireContext())
     }
 
     companion object {

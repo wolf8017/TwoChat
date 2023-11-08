@@ -5,7 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.wolf8017.twochat.R
+import com.wolf8017.twochat.adapter.CallListAdapter
+import com.wolf8017.twochat.model.CallList
+import com.wolf8017.twochat.model.ChatList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,13 +35,65 @@ class CallsFragment : Fragment() {
         }
     }
 
+
+    private var lists: MutableList<CallList> = ArrayList()
+    private lateinit var recyclerView: RecyclerView
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calls, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_calls, container, false)
+
+        recyclerView = view.findViewById(R.id.recycleView_call)
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        getCallList()
+
+        return view
     }
+
+    private fun getCallList() {
+        lists.add(
+            CallList(
+                "044",
+                "wolf8017",
+                "14/09/2023 \u00B7 20:00",
+                "https://tuyengiao.vn/Uploads/2023/2/14/25/cats.jpg",
+                "income"
+            )
+        )
+        lists.add(
+            CallList(
+                "044",
+                "wolf8017",
+                "14/09/2023 \u00B7 19:58",
+                "https://tuyengiao.vn/Uploads/2023/2/14/25/cats.jpg",
+                "missed"
+            )
+        )
+        lists.add(
+            CallList(
+                "044",
+                "wolf8017",
+                "14/09/2023 \u00B7 19:57",
+                "https://tuyengiao.vn/Uploads/2023/2/14/25/cats.jpg",
+                "missed"
+            )
+        )
+        lists.add(
+            CallList(
+                "044",
+                "wolf8017",
+                "14/09/2023 \u00B7 19:50",
+                "https://tuyengiao.vn/Uploads/2023/2/14/25/cats.jpg",
+                "out"
+            )
+        )
+        recyclerView.adapter = CallListAdapter(lists, requireContext())
+    }
+
 
     companion object {
         /**
