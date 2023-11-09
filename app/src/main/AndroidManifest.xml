@@ -15,6 +15,9 @@
             android:theme="@style/Theme.TwoChat"
             tools:targetApi="31">
         <activity
+                android:name=".view.auth.SetUserInfoActivity"
+                android:exported="false"/>
+        <activity
                 android:name=".view.auth.PhoneLoginActivity"
                 android:exported="false"/>
         <activity
