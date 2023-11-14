@@ -1,14 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".menu.ChatsFragment">
+<layout>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                 xmlns:tools="http://schemas.android.com/tools"
+                 android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 tools:context=".menu.ChatsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycleView_chat"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        <!-- TODO: Update blank fragment layout -->
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleView_chat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
-</FrameLayout>
+        <LinearLayout
+                android:id="@+id/ln_invite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="32dp">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Invite your friends"
+                    android:textSize="24sp"
+                    android:textColor="@color/black"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="None of your contacts are using TwoChat.\nUse the button below to invite them."
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="20dp"/>
+
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Invite a friend"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="32dp"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chat with your friends\nwho are using TwoChat on Android."
+                    android:gravity="center_horizontal"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="20dp"/>
+        </LinearLayout>
+    </FrameLayout>
+</layout>
+

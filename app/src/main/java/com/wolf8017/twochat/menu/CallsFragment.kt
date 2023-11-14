@@ -49,7 +49,7 @@ class CallsFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recycleView_call)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        getCallList()
+//        getCallList()
 
         return view
     }

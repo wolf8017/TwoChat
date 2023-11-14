@@ -66,6 +66,5 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimary"/>
-
     </LinearLayout>
 </RelativeLayout>

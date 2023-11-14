@@ -6,9 +6,22 @@
             android:icon="@android:drawable/ic_menu_search"
             android:title="Search"
             app:showAsAction="ifRoom"/>
-    <item
-            android:id="@+id/menu_more"
-            android:icon="@drawable/baseline_more_vert_24"
-            android:title="Search"
-            app:showAsAction="ifRoom"/>
+
+    <group
+            android:id="@+id/action_more">
+        <item
+                android:id="@+id/action_new_group"
+                android:title="New Group"/>
+        <item
+                android:id="@+id/action_broadcast"
+                android:title="Broadcast"/>
+        <item
+                android:id="@+id/action_starred_message"
+                android:title="Starred Message"/>
+        <item
+                android:id="@+id/action_settings"
+                android:title="Settings"/>
+    </group>
+
+
 </menu>

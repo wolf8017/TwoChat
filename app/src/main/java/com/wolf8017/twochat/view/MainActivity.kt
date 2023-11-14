@@ -1,6 +1,7 @@
 package com.wolf8017.twochat.view
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,6 +21,7 @@ import com.wolf8017.twochat.databinding.ActivityMainBinding
 import com.wolf8017.twochat.menu.CallsFragment
 import com.wolf8017.twochat.menu.ChatsFragment
 import com.wolf8017.twochat.menu.StatusFragment
+import com.wolf8017.twochat.view.settings.SettingsActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -102,9 +104,11 @@ class MainActivity : AppCompatActivity() {
 
         when (id) {
             R.id.menu_search -> Toast.makeText(this@MainActivity, "Action Search", Toast.LENGTH_LONG).show()
-            R.id.menu_more -> Toast.makeText(this@MainActivity, "Action More", Toast.LENGTH_LONG).show()
+            R.id.action_new_group -> Toast.makeText(this@MainActivity, "Action New Group", Toast.LENGTH_LONG).show()
+            R.id.action_broadcast -> Toast.makeText(this@MainActivity, "Action Broadcast", Toast.LENGTH_LONG).show()
+            R.id.action_starred_message -> Toast.makeText(this@MainActivity, "Action Starred Message", Toast.LENGTH_LONG).show()
+            R.id.action_settings -> startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
         }
-
         return super.onOptionsItemSelected(item)
     }
 

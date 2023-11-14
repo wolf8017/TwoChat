@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:context=".view.settings.SettingsActivity"
+            tools:ignore="HardcodedText">
+
+        <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="Settings"
+                app:titleTextColor="@color/white"
+                android:background="@color/colorPrimary">
+        </androidx.appcompat.widget.Toolbar>
+
+        <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                <LinearLayout
+                        android:id="@+id/ln_profile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16sp"
+                        android:orientation="horizontal">
+                    <com.mikhaellopez.circularimageview.CircularImageView
+                            android:id="@+id/image_profile"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
+                            android:src="@drawable/profile_avatar"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                        <TextView
+                                android:id="@+id/tv_username"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Username"
+                                android:textSize="20sp"
+                                android:textColor="@color/black"/>
+                        <TextView
+                                android:id="@+id/tv_bio"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Hey there's I am using TwoChat"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E4E4E4"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16sp"
+                        android:orientation="horizontal">
+                    <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_gravity="center"
+                            app:tint="@color/colorPrimary"
+                            android:src="@drawable/baseline_settings_24"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Account"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"/>
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Privacy, security, change number phone"
+                                android:textSize="14sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16sp"
+                        android:orientation="horizontal">
+                    <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_gravity="center"
+                            app:tint="@color/colorPrimary"
+                            android:src="@drawable/baseline_chat_24"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chat"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"/>
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Themes, wallpaper, chat history"
+                                android:textSize="14sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16sp"
+                        android:orientation="horizontal">
+                    <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_gravity="center"
+                            app:tint="@color/colorPrimary"
+                            android:src="@drawable/baseline_notifications_24"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Notification"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"/>
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Message, group, call tones"
+                                android:textSize="14sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16sp"
+                        android:orientation="horizontal">
+                    <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_gravity="center"
+                            app:tint="@color/colorPrimary"
+                            android:src="@drawable/baseline_data_usage_24"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Data and storage usage"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"/>
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Network usage, auto download"
+                                android:textSize="14sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16sp"
+                        android:orientation="horizontal">
+                    <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_gravity="center"
+                            app:tint="@color/colorPrimary"
+                            android:src="@drawable/baseline_help_24"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Help"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"/>
+                        <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="FAQ, contact us, privacy policy"
+                                android:textSize="14sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E4E4E4"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:padding="16sp"
+                        android:orientation="horizontal">
+                    <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_marginStart="10dp"
+                            android:layout_gravity="center"
+                            app:tint="@color/colorPrimary"
+                            android:src="@drawable/baseline_people_24"/>
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="Invite a friend"
+                            android:textSize="16sp"
+                            android:textColor="@color/black"/>
+                </LinearLayout>
+
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="4dp"
+                        android:text="from"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="4dp"
+                        android:text="W O L F 8 0 1 7"
+                        android:textColor="@color/colorPrimary"
+                        android:textStyle="bold"
+                        android:textSize="16sp"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>
+

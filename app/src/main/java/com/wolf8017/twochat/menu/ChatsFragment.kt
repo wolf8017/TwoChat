@@ -47,7 +47,7 @@ class ChatsFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recycleView_chat)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        getChatList();
+//        getChatList();
         return view
     }
 
