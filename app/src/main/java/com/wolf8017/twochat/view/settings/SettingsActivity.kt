@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,6 +24,9 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_settings)
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         firestore = FirebaseFirestore.getInstance()
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
@@ -44,7 +48,9 @@ class SettingsActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener {
                 val userName: String = Objects.requireNonNull(it["userName"].toString())
+                val imageProfile: String = it["imageProfile"].toString()
                 binding.tvUsername.text = userName
+                Glide.with(this@SettingsActivity).load(imageProfile).into(binding.imageProfile)
 
             }
             .addOnFailureListener {
