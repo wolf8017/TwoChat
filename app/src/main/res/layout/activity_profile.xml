@@ -26,6 +26,7 @@
                 android:layout_gravity="center_horizontal">
             <com.mikhaellopez.circularimageview.CircularImageView
                     android:id="@+id/image_profile"
+                    android:transitionName="image"
                     android:layout_width="200dp"
                     android:layout_height="200dp"
                     android:scaleType="centerCrop"
@@ -47,7 +48,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
             <LinearLayout
+                    android:id="@+id/ln_edit_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="16dp"
@@ -219,6 +222,17 @@
 
         </LinearLayout>
 
+        <Button
+                android:id="@+id/btn_log_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="16dp"
+                android:text="LOG OUT"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:background="@android:color/transparent"/>
     </LinearLayout>
 </layout>
 

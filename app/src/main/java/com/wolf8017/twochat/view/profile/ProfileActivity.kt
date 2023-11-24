@@ -2,19 +2,26 @@ package com.wolf8017.twochat.view.profile
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ContentResolver
 import android.content.Intent
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.TextUtils
+import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.MimeTypeMap
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.Task
@@ -25,7 +32,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.wolf8017.twochat.R
+import com.wolf8017.twochat.common.Common
 import com.wolf8017.twochat.databinding.ActivityProfileBinding
+import com.wolf8017.twochat.view.MainActivity
+import com.wolf8017.twochat.view.display.ViewImageActivity
+import com.wolf8017.twochat.view.settings.SettingsActivity
+import com.wolf8017.twochat.view.startup.SplashScreenActivity
+import com.wolf8017.twochat.view.startup.WelcomeScreenActivity
 import java.io.IOException
 
 class ProfileActivity : AppCompatActivity() {
@@ -34,6 +47,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var firestore: FirebaseFirestore
     private var bottomSheetDialog: BottomSheetDialog? = null
+    private var bsDialogEditName: BottomSheetDialog? = null
     private lateinit var imgUri: Uri
     private lateinit var processDialog: ProgressDialog
 
@@ -59,6 +73,46 @@ class ProfileActivity : AppCompatActivity() {
         binding.fabCamera.setOnClickListener {
             showBottomSheetPickPhoto()
         }
+
+        binding.lnEditName.setOnClickListener {
+            showBottomSheetEditName()
+        }
+
+        binding.imageProfile.setOnClickListener {
+            binding.imageProfile.invalidate()
+
+            val dr: Drawable = binding.imageProfile.drawable
+            Common.IMAGE_BITMAP = ((dr.current) as? BitmapDrawable)?.bitmap
+
+            val activityOptionCompat: ActivityOptionsCompat = ActivityOptionsCompat
+                .makeSceneTransitionAnimation(this@ProfileActivity, binding.imageProfile, "image")
+
+            val intent: Intent = Intent(this@ProfileActivity, ViewImageActivity::class.java)
+            startActivity(intent, activityOptionCompat.toBundle())
+        }
+
+        binding.btnLogOut.setOnClickListener {
+            showDialogSignOut()
+        }
+    }
+
+    private fun showDialogSignOut() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this@ProfileActivity)
+        builder.setMessage("Do you want to sign out?")
+        builder.setPositiveButton("Sign out") { dialog, which ->
+            dialog.cancel()
+            FirebaseAuth.getInstance().signOut()
+
+            startActivity(Intent(this@ProfileActivity, SplashScreenActivity::class.java))
+            finish()
+        }
+
+        builder.setNegativeButton("No"){ dialog, which ->
+            dialog.cancel()
+        }
+
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.show()
     }
 
     @SuppressLint("InflateParams", "ObsoleteSdkInt")
@@ -89,6 +143,41 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         bottomSheetDialog?.show()
+    }
+
+    @SuppressLint("InflateParams", "ObsoleteSdkInt")
+    private fun showBottomSheetEditName() {
+        val view: View = layoutInflater.inflate(R.layout.bottom_sheet_edit_name, null)
+
+        view.findViewById<View>(R.id.btn_cancel)?.setOnClickListener {
+            bsDialogEditName?.dismiss()
+        }
+
+        val edUserName: EditText = view.findViewById(R.id.ed_username)
+
+        view.findViewById<View>(R.id.btn_save)?.setOnClickListener {
+
+            if (TextUtils.isEmpty(edUserName.text.toString())) {
+                Toast.makeText(applicationContext, "Name can't be empty", Toast.LENGTH_SHORT).show()
+            } else {
+                updatName(edUserName.text.toString())
+                bsDialogEditName?.dismiss()
+            }
+        }
+
+        bsDialogEditName = BottomSheetDialog(this)
+        bsDialogEditName?.setContentView(view)
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            bsDialogEditName?.window!!.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        }
+
+        bsDialogEditName?.setOnDismissListener {
+            bsDialogEditName = null
+        }
+
+        bsDialogEditName?.show()
     }
 
     private val changeImage =
@@ -149,6 +238,17 @@ class ProfileActivity : AppCompatActivity() {
             }
     }
 
+    private fun updatName(newName: String) {
+        firestore.collection("User")
+            .document(firebaseUser.uid)
+            .update("userName", newName)
+            .addOnSuccessListener {
+                Toast.makeText(applicationContext, "update successfully", Toast.LENGTH_SHORT).show()
+                getInfo()
+            }
+            .addOnFailureListener {}
+    }
+
     private fun getInfo() {
         firestore.collection("User")
             .document(firebaseUser.uid)
@@ -160,10 +260,29 @@ class ProfileActivity : AppCompatActivity() {
 
                 binding.tvUsername.text = userName
                 binding.tvPhone.text = userPhone
-                Glide.with(this@ProfileActivity).load(imageProfile).into(binding.imageProfile)
+                if (imageProfile.isEmpty()) {
+                    Glide.with(this@ProfileActivity).load(R.drawable.profile_avatar).into(binding.imageProfile)
+                } else {
+                    Glide.with(this@ProfileActivity).load(imageProfile).into(binding.imageProfile)
+                }
             }
             .addOnFailureListener {
 
             }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+        {
+            val intent: Intent = Intent(this@ProfileActivity, SettingsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
     }
 }

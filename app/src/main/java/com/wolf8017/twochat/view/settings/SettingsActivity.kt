@@ -50,7 +50,12 @@ class SettingsActivity : AppCompatActivity() {
                 val userName: String = Objects.requireNonNull(it["userName"].toString())
                 val imageProfile: String = it["imageProfile"].toString()
                 binding.tvUsername.text = userName
-                Glide.with(this@SettingsActivity).load(imageProfile).into(binding.imageProfile)
+                if (imageProfile.isEmpty()) {
+                    Glide.with(this@SettingsActivity).load(R.drawable.profile_avatar).into(binding.imageProfile)
+                } else {
+                    Glide.with(this@SettingsActivity).load(imageProfile).into(binding.imageProfile)
+                }
+
 
             }
             .addOnFailureListener {

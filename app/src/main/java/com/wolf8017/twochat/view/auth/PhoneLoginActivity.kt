@@ -33,7 +33,7 @@ class PhoneLoginActivity : AppCompatActivity() {
     private lateinit var progressDialog: ProgressDialog
 
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var firebaseUser: FirebaseUser
+    private var firebaseUser: FirebaseUser? = null
     private lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,26 +43,24 @@ class PhoneLoginActivity : AppCompatActivity() {
         //
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-        firebaseUser = FirebaseAuth.getInstance().currentUser!!
+        firebaseUser = FirebaseAuth.getInstance().currentUser
 
         if (firebaseUser != null) {
             startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
         }
 
         progressDialog = ProgressDialog(this)
-        binding.btnNext.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                if (binding.btnNext.text.toString() == "Next") {
+        binding.btnNext.setOnClickListener {
+            if (binding.btnNext.text.toString() == "Next") {
 
-                    var phone: String = "+" + binding.edCountryCode.text.toString() + binding.edPhone.text.toString()
-                    startPhoneNumberVerification(phone)
-                } else {
-                    progressDialog.setMessage("Verifying .. ")
-                    progressDialog.show()
-                    verifyPhoneNumberWithCode(storedVerificationId, binding.edCode.text.toString())
-                }
+                val phone: String = "+" + binding.edCountryCode.text.toString() + binding.edPhone.text.toString()
+                startPhoneNumberVerification(phone)
+            } else {
+                progressDialog.setMessage("Verifying .. ")
+                progressDialog.show()
+                verifyPhoneNumberWithCode(storedVerificationId, binding.edCode.text.toString())
             }
-        })
+        }
 
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
@@ -109,6 +107,16 @@ class PhoneLoginActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = auth.currentUser
+        updateUI(currentUser)
+    }
+
+    private fun updateUI(user: FirebaseUser? = auth.currentUser) {}
+
+
     private fun startPhoneNumberVerification(phoneNumber: String) {
         val options = PhoneAuthOptions.newBuilder(auth).setPhoneNumber(phoneNumber) // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
@@ -132,32 +140,6 @@ class PhoneLoginActivity : AppCompatActivity() {
                 Log.d(TAG, "signInWithCredential:success")
                 val user = task.result?.user
                 startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
-
-//                if (user != null) {
-//                    val userID: String = user.uid
-//                    val users: User = User(
-//                        userID,
-//                        "",
-//                        user.phoneNumber.toString(),
-//                        "",
-//                        "",
-//                        "",
-//                        "",
-//                        "",
-//                        "",
-//                        "",
-//                    )
-//                    firestore.collection("User")
-//                        .document(userID)
-//                        .parent
-//                        .add(users)
-//                        .addOnSuccessListener {
-//                            startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
-//                        }
-//                } else {
-//                    Toast.makeText(applicationContext, "Something went wrong", Toast.LENGTH_LONG).show()
-//                }
-//               startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
             } else {
                 progressDialog.dismiss()
                 // Sign in failed, display a message and update the UI
