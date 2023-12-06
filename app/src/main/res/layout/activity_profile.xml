@@ -7,7 +7,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            tools:context=".view.profile.ProfileActivity"
+            tools:context=".view.activities.profile.ProfileActivity"
             tools:ignore="ContentDescription,UselessLeaf, HardcodedText, UselessParent, UseCompoundDrawables">
 
         <androidx.appcompat.widget.Toolbar

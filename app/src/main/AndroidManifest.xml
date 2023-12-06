@@ -20,28 +20,37 @@
             android:theme="@style/Theme.TwoChat"
             tools:targetApi="31">
         <activity
-                android:name=".view.display.ViewImageActivity"
+                android:name=".view.activities.profile.UserProfileActivity"
                 android:exported="false"/>
         <activity
-                android:name=".view.profile.ProfileActivity"
-                android:exported="false"
-                android:parentActivityName=".view.settings.SettingsActivity"/>
+                android:name=".view.activities.chats.ChatsActivity"
+                android:exported="false"/>
         <activity
-                android:name=".view.settings.SettingsActivity"
+                android:name=".view.activities.contact.ContactsActivity"
+                android:exported="false"/>
+        <activity
+                android:name=".view.activities.display.ViewImageActivity"
+                android:exported="false"/>
+        <activity
+                android:name=".view.activities.profile.ProfileActivity"
+                android:exported="false"
+                android:parentActivityName=".view.activities.settings.SettingsActivity"/>
+        <activity
+                android:name=".view.activities.settings.SettingsActivity"
                 android:exported="false"
                 android:parentActivityName=".view.MainActivity"
                 android:windowSoftInputMode="adjustResize"/>
         <activity
-                android:name=".view.auth.SetUserInfoActivity"
+                android:name=".view.activities.auth.SetUserInfoActivity"
                 android:exported="false"/>
         <activity
-                android:name=".view.auth.PhoneLoginActivity"
+                android:name=".view.activities.auth.PhoneLoginActivity"
                 android:exported="false"/>
         <activity
-                android:name=".view.startup.WelcomeScreenActivity"
+                android:name=".view.activities.startup.WelcomeScreenActivity"
                 android:exported="false"/>
         <activity
-                android:name=".view.startup.SplashScreenActivity"
+                android:name=".view.activities.startup.SplashScreenActivity"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -52,12 +61,13 @@
         <activity
                 android:name=".view.MainActivity"
                 android:exported="false">
-<!--             <intent-filter>-->
-<!--             <action android:name="android.intent.action.MAIN"/>-->
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN"/> -->
 
 
-<!--             <category android:name="android.intent.category.LAUNCHER"/>-->
-<!--             </intent-filter>-->
+            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
+            <!-- </intent-filter> -->
         </activity>
     </application>
 

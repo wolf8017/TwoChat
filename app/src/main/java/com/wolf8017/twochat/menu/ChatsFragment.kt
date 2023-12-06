@@ -1,15 +1,23 @@
 package com.wolf8017.twochat.menu
 
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.adapter.ChatListAdapter
+import com.wolf8017.twochat.databinding.FragmentChatsBinding
 import com.wolf8017.twochat.model.ChatList
+import java.util.Objects
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,30 +42,93 @@ class ChatsFragment : Fragment() {
         }
     }
 
-    private var lists: MutableList<ChatList> = ArrayList()
-    private lateinit var recyclerView: RecyclerView
+    private var user: FirebaseUser? = null
+    private lateinit var reference: DatabaseReference
+    private lateinit var firestore: FirebaseFirestore
+
+    private var handler: Handler = Handler()
+
+    private var list: MutableList<ChatList> = mutableListOf()
+    private var allUserID: MutableList<String> = mutableListOf()
+    private lateinit var adapter: ChatListAdapter
+
+    private lateinit var binding: FragmentChatsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_chats, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chats, container, false)
 
-        recyclerView = view.findViewById(R.id.recycleView_chat)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recycleViewChat.layoutManager = LinearLayoutManager(context)
+        adapter = ChatListAdapter(list, requireContext())
+        binding.recycleViewChat.adapter = adapter
 
-//        getChatList();
-        return view
+        user = FirebaseAuth.getInstance().currentUser
+        reference = FirebaseDatabase.getInstance().reference
+        firestore = FirebaseFirestore.getInstance()
+
+        if (user != null) {
+            getChatList();
+        }
+
+        return binding.root
     }
 
     private fun getChatList() {
-        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","https://tuyengiao.vn/Uploads/2023/2/14/25/cats.jpg"))
-        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
-        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
-        lists.add(ChatList("4","wolf8017","Hello World","14/09/2023","dangcongsan.png"))
+        binding.progressCircular.visibility = View.VISIBLE
 
-        recyclerView.adapter = ChatListAdapter(lists,requireContext())
+        reference.child("ChatList").child(user!!.uid)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    list.clear()
+                    allUserID.clear()
+                    for (snapshot in dataSnapshot.children) {
+                        val userID: String = Objects.requireNonNull(snapshot.child("chatId").value).toString()
+
+                        binding.progressCircular.visibility = View.GONE
+                        allUserID.add(userID)
+                    }
+                    getUserData()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+    }
+
+    private fun getUserData() {
+        handler.post {
+            for (userID in allUserID) {
+                firestore.collection("User").document(userID)
+                    .get()
+                    .addOnSuccessListener {
+                        try {
+                            val chat: ChatList = ChatList(
+                                it["userID"].toString(),
+                                it["userName"].toString(),
+                                "This is description",
+                                "",
+                                it["imageProfile"].toString(),
+                            )
+                            list.add(chat)
+                        } catch (e: Exception) {
+                            Log.d("ChatsFragment", "onSuccess: ${e.message}")
+                        }
+                        adapter.notifyItemInserted(0)
+                        adapter.notifyDataSetChanged()
+
+                        Log.d("ChatsFragment", "onSuccess: adapter ${adapter.itemCount}")
+
+                    }
+                    .addOnFailureListener {
+                        Log.d("ChatsFragment", "onFailure: Error ${it.message}")
+                    }
+            }
+        }
     }
 
     companion object {

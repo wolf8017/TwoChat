@@ -1,6 +1,7 @@
 package com.wolf8017.twochat.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +11,13 @@ import com.bumptech.glide.Glide
 import com.mikhaellopez.circularimageview.CircularImageView
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.model.ChatList
+import com.wolf8017.twochat.view.activities.chats.ChatsActivity
 
 class ChatListAdapter() : RecyclerView.Adapter<ChatListAdapter.Holder>() {
     private var list: MutableList<ChatList> = mutableListOf()
     private lateinit var context: Context
 
-    constructor(list: MutableList<ChatList>, context: Context) : this(){
+    constructor(list: MutableList<ChatList>, context: Context) : this() {
         this.list = list
         this.context = context
     }
@@ -50,8 +52,20 @@ class ChatListAdapter() : RecyclerView.Adapter<ChatListAdapter.Holder>() {
         holder.tvDate.text = chatlist.date
 
         //for image, I need library
-        Glide.with(context).load(chatlist.urlProfile).into(holder.profile)
-    }
+        if (chatlist.urlProfile == "") {
+            holder.profile.setImageResource(R.drawable.profile_avatar) // Set default image if profile user is null
+        } else {
+            Glide.with(context).load(chatlist.urlProfile).into(holder.profile)
+        }
 
+        holder.itemView.setOnClickListener {
+            context.startActivity(
+                Intent(context, ChatsActivity::class.java)
+                    .putExtra("userID", chatlist.userID)
+                    .putExtra("userName", chatlist.userName)
+                    .putExtra("userProfile", chatlist.urlProfile)
+            )
+        }
+    }
 }
 

@@ -21,7 +21,8 @@ import com.wolf8017.twochat.databinding.ActivityMainBinding
 import com.wolf8017.twochat.menu.CallsFragment
 import com.wolf8017.twochat.menu.ChatsFragment
 import com.wolf8017.twochat.menu.StatusFragment
-import com.wolf8017.twochat.view.settings.SettingsActivity
+import com.wolf8017.twochat.view.activities.contact.ContactsActivity
+import com.wolf8017.twochat.view.activities.settings.SettingsActivity
 
 
 class MainActivity : AppCompatActivity() {
@@ -106,7 +107,12 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_search -> Toast.makeText(this@MainActivity, "Action Search", Toast.LENGTH_LONG).show()
             R.id.action_new_group -> Toast.makeText(this@MainActivity, "Action New Group", Toast.LENGTH_LONG).show()
             R.id.action_broadcast -> Toast.makeText(this@MainActivity, "Action Broadcast", Toast.LENGTH_LONG).show()
-            R.id.action_starred_message -> Toast.makeText(this@MainActivity, "Action Starred Message", Toast.LENGTH_LONG).show()
+            R.id.action_starred_message -> Toast.makeText(
+                this@MainActivity,
+                "Action Starred Message",
+                Toast.LENGTH_LONG
+            ).show()
+
             R.id.action_settings -> startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
@@ -117,7 +123,13 @@ class MainActivity : AppCompatActivity() {
         binding.fabAction.hide()
         Handler(Looper.getMainLooper()).postDelayed({
             when (index) {
-                0 -> binding.fabAction.setImageDrawable(getDrawable(R.drawable.baseline_chat_24))
+                0 -> {
+                    binding.fabAction.setImageDrawable(getDrawable(R.drawable.baseline_chat_24))
+                    binding.fabAction.setOnClickListener {
+                        startActivity(Intent(this@MainActivity, ContactsActivity::class.java))
+                    }
+                }
+
                 1 -> binding.fabAction.setImageDrawable(getDrawable(R.drawable.baseline_camera_alt_24))
                 2 -> binding.fabAction.setImageDrawable(getDrawable(R.drawable.baseline_call_24))
             }
