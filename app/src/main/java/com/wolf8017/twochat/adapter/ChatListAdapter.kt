@@ -12,6 +12,7 @@ import com.mikhaellopez.circularimageview.CircularImageView
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.model.ChatList
 import com.wolf8017.twochat.view.activities.chats.ChatsActivity
+import com.wolf8017.twochat.view.activities.dialog.DialogViewUser
 
 class ChatListAdapter() : RecyclerView.Adapter<ChatListAdapter.Holder>() {
     private var list: MutableList<ChatList> = mutableListOf()
@@ -65,6 +66,10 @@ class ChatListAdapter() : RecyclerView.Adapter<ChatListAdapter.Holder>() {
                     .putExtra("userName", chatlist.userName)
                     .putExtra("userProfile", chatlist.urlProfile)
             )
+        }
+
+        holder.profile.setOnClickListener {
+            DialogViewUser(context, chatlist)
         }
     }
 }

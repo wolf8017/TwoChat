@@ -133,3 +133,17 @@ G.idea/sonarlint/issuestore/f/0/f07866736216be0ee2aba49e392191aeae700a35,b\f\bf
 Q.idea/sonarlint/securityhotspotstore/2/a/2afbb999f001938c88fa43fc2ef52abf0f8213e4,a\8\a8a52112049d840217cfa586a3a399d9502f9b94
 S
 #.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
+n
+>app/src/main/java/com/wolf8017/twochat/managers/ChatService.kt,d\a\dabf2a79f7e4e157058f7c76e1381cd6e927d76a
+€
+Papp/src/main/java/com/wolf8017/twochat/managers/interfaces/OnReadChatCallBack.kt,3\5\3592eb7a6456b0ad862d4c86926b887e6f03f105
+‰
+Yapp/src/main/java/com/wolf8017/twochat/view/activities/display/ReviewSendImageActivity.kt,f\a\fabc77c5df64503598dff0f3193ef69b37c8d110
+†
+Vapp/src/main/java/com/wolf8017/twochat/view/activities/dialog/DialogReviewSendImage.kt,5\4\541677abf649842830e59df71ae21efae3f8d3a5
+r
+Bapp/src/main/java/com/wolf8017/twochat/services/FirebaseService.kt,5\0\508cdf8f40564ab93dae4ed7403348dd1a0071c0
+l
+<app/src/main/java/com/wolf8017/twochat/tools/AudioService.kt,9\0\9019531a7536196b2f4e2458a00b4862e11acdab
+
+Oapp/src/main/java/com/wolf8017/twochat/view/activities/dialog/DialogViewUser.kt,9\1\91b66aaa394b6a6bad4b8a383203922b237d5c21

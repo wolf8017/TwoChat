@@ -9,7 +9,7 @@
             android:fitsSystemWindows="true"
             android:background="@color/white"
             tools:context=".view.activities.profile.UserProfileActivity"
-            tools:ignore="MissingConstraints, ContentDescription, HardcodedText">
+            tools:ignore="MissingConstraints, ContentDescription, HardcodedText, UseCompoundDrawables">
 
         <com.google.android.material.appbar.AppBarLayout
                 android:id="@+id/app_bar"
@@ -19,6 +19,7 @@
                 android:theme="@style/ThemeOverlay.AppCompat.Light">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:id="@+id/collapse"
                     android:layout_width="match_parent"
                     android:layout_height="320dp"
                     android:fitsSystemWindows="true"
@@ -26,6 +27,8 @@
                     app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <ImageView
+                        android:id="@+id/image_profile"
+                        android:transitionName="image_profile"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@drawable/profile_avatar"
@@ -39,13 +42,12 @@
                         android:background="@drawable/vignette"/>
 
                 <androidx.appcompat.widget.Toolbar
+                        android:id="@+id/toolbar"
                         android:layout_width="match_parent"
                         android:layout_height="?actionBarSize"
                         app:layout_collapseMode="pin"
                         app:title="Username"
                         app:titleTextColor="@color/white"
-                        app:subtitle="+84334795308"
-                        app:subtitleTextColor="@color/white"
                         app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"
                         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
@@ -63,15 +65,214 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
+                <androidx.appcompat.widget.SwitchCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Mute notification"
-                        android:background="#F4F4F4"
+                        android:background="@color/white"
+                        android:theme="@style/CustomSwitch"
                         android:layout_marginBottom="1dp"
                         android:padding="16dp"
                         android:textSize="14sp"/>
 
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Custom notification"
+                        android:background="@color/white"
+                        android:layout_marginBottom="1dp"
+                        android:padding="16dp"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"/>
+
+                <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Media Visibility"
+                        android:background="@color/white"
+                        android:layout_marginBottom="1dp"
+                        android:padding="16dp"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"/>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/white"
+                        android:padding="16dp">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Encryption"
+                            android:textColor="@color/black"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="Message to this chat and calls are secured with end-to-end encryption. Tap to verify"
+                                android:textColor="@color/black"/>
+
+                        <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_marginStart="20dp"
+                                android:src="@drawable/baseline_lock_24"
+                                app:tint="@color/colorPrimary"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:background="@color/white">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="About and phone number"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="16sp"/>
+
+                    <TextView
+                            android:id="@+id/tv_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Description"
+                            android:background="@color/white"
+                            android:layout_marginBottom="1dp"
+                            android:textColor="@color/black"
+                            android:textSize="15sp"/>
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="14th Sept, 2000"
+                            android:background="@color/white"
+                            android:textSize="14sp"/>
+
+                    <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:background="@color/white"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            android:orientation="horizontal">
+
+                        <TextView
+                                android:id="@+id/tv_phone"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:text="+84 xxx xxx xxx"
+                                android:textColor="@color/black"/>
+
+                        <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_marginStart="20dp"
+                                android:src="@drawable/baseline_chat_24"
+                                app:tint="@color/colorPrimary"/>
+
+                        <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_marginStart="20dp"
+                                android:src="@drawable/baseline_call_24"
+                                app:tint="@color/colorPrimary"/>
+
+                        <ImageView
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_marginStart="20dp"
+                                android:src="@drawable/baseline_videocam_24"
+                                app:tint="@color/colorPrimary"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:background="@color/white"
+                        android:orientation="horizontal">
+
+                    <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginStart="20dp"
+                            android:src="@drawable/baseline_block_24"
+                            app:tint="@android:color/holo_red_dark"/>
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="25dp"
+                            android:text="Block"
+                            android:textStyle="bold"
+                            android:background="@color/white"
+                            android:layout_marginBottom="1dp"
+                            android:textColor="@android:color/holo_red_dark"
+                            android:textSize="15sp"/>
+                </LinearLayout>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"/>
+
+                <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:background="@color/white"
+                        android:orientation="horizontal">
+
+                    <ImageView
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginStart="20dp"
+                            android:src="@drawable/baseline_report_24"
+                            app:tint="@android:color/holo_red_dark"/>
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="25dp"
+                            android:text="Report contact"
+                            android:textStyle="bold"
+                            android:background="@color/white"
+                            android:layout_marginBottom="1dp"
+                            android:textColor="@android:color/holo_red_dark"
+                            android:textSize="15sp"/>
+                </LinearLayout>
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"/>
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
