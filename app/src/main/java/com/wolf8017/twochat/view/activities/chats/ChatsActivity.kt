@@ -136,7 +136,6 @@ class ChatsActivity : AppCompatActivity() {
                         vibrator.vibrate(100)
                     }
                 } else {
-//                    requestPermissions()
                     checkAndRequestPermissions()
                 }
             }

@@ -14,7 +14,7 @@ import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.databinding.ActivityPhoneLoginBinding
-import com.wolf8017.twochat.model.user.User
+import com.wolf8017.twochat.view.MainActivity
 import java.util.concurrent.TimeUnit
 
 class PhoneLoginActivity : AppCompatActivity() {
@@ -45,9 +45,7 @@ class PhoneLoginActivity : AppCompatActivity() {
         firestore = FirebaseFirestore.getInstance()
         firebaseUser = FirebaseAuth.getInstance().currentUser
 
-        if (firebaseUser != null) {
-            startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
-        }
+        //Check if the user exists then get it to MainActivity, otherwise to SetUserInfoActivty
 
         progressDialog = ProgressDialog(this)
         binding.btnNext.setOnClickListener {
@@ -82,7 +80,7 @@ class PhoneLoginActivity : AppCompatActivity() {
                     }
 
                     is FirebaseAuthMissingActivityForRecaptchaException -> {
-                        // reCAPTCHA verification attempted with null Activity
+                        // SreCAPTCHA verification attempted with null Activity
                     }
                 }
             }
@@ -97,11 +95,16 @@ class PhoneLoginActivity : AppCompatActivity() {
                 // by combining the code with a verification ID.
                 Log.d(TAG, "onCodeSent:$verificationId")
 
-                // Save verification ID and resending token so we can use them later
+                // Save verification ID and resending token, so we can use them later
                 storedVerificationId = verificationId
                 resendToken = token
 
                 binding.btnNext.text = "Confirm"
+                binding.edCode.visibility = View.VISIBLE
+                binding.edCountryCode.isEnabled = false
+                binding.edPhone.isEnabled = false
+
+
                 progressDialog.dismiss()
             }
         }
@@ -139,7 +142,20 @@ class PhoneLoginActivity : AppCompatActivity() {
                 progressDialog.dismiss()
                 Log.d(TAG, "signInWithCredential:success")
                 val user = task.result?.user
-                startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
+                if (user != null) {
+                    firestore.collection("User").document(user.uid)
+                        .get()
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                startActivity(Intent(this@PhoneLoginActivity, MainActivity::class.java))
+                            } else {
+                                startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
+                            }
+                        }
+                } else {
+                    // Handle the case where user is null
+                }
+
             } else {
                 progressDialog.dismiss()
                 // Sign in failed, display a message and update the UI

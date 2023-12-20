@@ -5,7 +5,13 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -14,12 +20,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
@@ -34,11 +43,10 @@ import com.google.firebase.storage.StorageReference
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.common.Common
 import com.wolf8017.twochat.databinding.ActivityProfileBinding
-import com.wolf8017.twochat.view.MainActivity
 import com.wolf8017.twochat.view.activities.display.ViewImageActivity
 import com.wolf8017.twochat.view.activities.settings.SettingsActivity
 import com.wolf8017.twochat.view.activities.startup.SplashScreenActivity
-import com.wolf8017.twochat.view.activities.startup.WelcomeScreenActivity
+import java.io.FileDescriptor
 import java.io.IOException
 
 class ProfileActivity : AppCompatActivity() {
@@ -48,22 +56,22 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var firestore: FirebaseFirestore
     private var bottomSheetDialog: BottomSheetDialog? = null
     private var bsDialogEditName: BottomSheetDialog? = null
-    private lateinit var imgUri: Uri
-    private lateinit var processDialog: ProgressDialog
+    private var imgUri: Uri? = null
+    private lateinit var progressDialog: ProgressDialog
 
+    //for camera
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_profile)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         firestore = FirebaseFirestore.getInstance()
 
-        processDialog = ProgressDialog(this)
-
+        progressDialog = ProgressDialog(this)
 
         getInfo()
         initActionClick()
@@ -107,7 +115,7 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
 
-        builder.setNegativeButton("No"){ dialog, which ->
+        builder.setNegativeButton("No") { dialog, which ->
             dialog.cancel()
         }
 
@@ -127,7 +135,27 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         view.findViewById<View>(R.id.ln_camera)?.setOnClickListener {
-            Toast.makeText(applicationContext, "Camera", Toast.LENGTH_SHORT).show()
+            //Open camera
+            checkCameraPermission()
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(android.Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_DENIED ||
+                    checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_DENIED
+                ) {
+                    val permission = arrayOf<String>(
+                        android.Manifest.permission.CAMERA,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                    requestPermissions(permission, 112)
+                } else {
+                    openCamera()
+                }
+            } else {
+                openCamera()
+            }
+
             bottomSheetDialog?.dismiss()
         }
 
@@ -144,6 +172,33 @@ class ProfileActivity : AppCompatActivity() {
 
         bottomSheetDialog?.show()
     }
+
+    private fun checkCameraPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.CAMERA) ==
+                PackageManager.PERMISSION_DENIED ||
+                checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED) {
+                val permission = arrayOf<String>(
+                    android.Manifest.permission.CAMERA,
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+                requestPermissions(permission, 112)
+            }
+        }
+    }
+
+
+    private fun openCamera() {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "New Picture")
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera")
+        imgUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imgUri)
+        cameraActivityResultLauncher.launch(cameraIntent)
+    }
+
 
     @SuppressLint("InflateParams", "ObsoleteSdkInt")
     private fun showBottomSheetEditName() {
@@ -186,15 +241,60 @@ class ProfileActivity : AppCompatActivity() {
         ) {
             if (it.resultCode == Activity.RESULT_OK) {
                 val data = it.data
-                imgUri = data?.data!!
-                uploadToFirebase()
-                try {
-                    binding.imageProfile.setImageURI(imgUri)
-                } catch (e: IOException) {
-                    e.printStackTrace()
+                if (data != null) {
+                    imgUri = data.data!!
+                    uploadToFirebase()
+                    try {
+                        binding.imageProfile.setImageURI(imgUri)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    // Handle the case when data is null
+                    Toast.makeText(this, "Failed to retrieve image data", Toast.LENGTH_SHORT).show()
                 }
+
             }
         }
+
+    private var cameraActivityResultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult(), ActivityResultCallback {
+            if (it.resultCode == RESULT_OK) {
+                val inputImage = uriToBitmap(imgUri!!)
+                val rotated = rotateBitmap(inputImage!!)
+                binding.imageProfile.setImageBitmap(rotated)
+                uploadToFirebase()
+            }
+        }
+    )
+
+    private fun uriToBitmap(selectedFileUri: Uri): Bitmap? {
+        try {
+            val parcelFileDescriptor = contentResolver.openFileDescriptor(selectedFileUri, "r")
+            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+            val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+            parcelFileDescriptor.close()
+            return image
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    @SuppressLint("Range", "Recycle")
+    fun rotateBitmap(input: Bitmap): Bitmap {
+        val orientationColumn =
+            arrayOf(MediaStore.Images.Media.ORIENTATION)
+        val cur: Cursor? = contentResolver.query(imgUri!!, orientationColumn, null, null, null)
+        var orientation = -1
+        if (cur != null && cur.moveToFirst()) {
+            orientation = cur.getInt(cur.getColumnIndex(orientationColumn[0]))
+        }
+        Log.d("tryOrientation", orientation.toString() + "")
+        val rotationMatrix = Matrix()
+        rotationMatrix.setRotate(orientation.toFloat())
+        return Bitmap.createBitmap(input, 0, 0, input.width, input.height, rotationMatrix, true)
+    }
 
     private fun openGallery() {
         val pickImg = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
@@ -209,11 +309,11 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun uploadToFirebase() {
 
-        processDialog.setMessage("uploading...")
-        processDialog.show()
+        progressDialog.setMessage("uploading...")
+        progressDialog.show()
         val storageRef: StorageReference = FirebaseStorage.getInstance().getReference()
-            .child("ImageProfile/" + System.currentTimeMillis() + "." + getFileExtention(imgUri))
-        storageRef.putFile(imgUri)
+            .child("ImageProfile/" + System.currentTimeMillis() + "." + getFileExtention(imgUri!!))
+        storageRef.putFile(imgUri!!)
             .addOnSuccessListener {
                 val urlTask: Task<Uri> = it.storage.downloadUrl
                 while (!urlTask.isSuccessful) {
@@ -224,17 +324,18 @@ class ProfileActivity : AppCompatActivity() {
                 val hashMap: MutableMap<String, Any> = mutableMapOf()
                 hashMap["imageProfile"] = downloadUrl
 
-                processDialog.dismiss()
+                progressDialog.dismiss()
 
                 firestore.collection("User").document(firebaseUser.uid)
                     .update(hashMap)
                     .addOnSuccessListener {
                         Toast.makeText(applicationContext, "upload successfully", Toast.LENGTH_SHORT).show()
+                        getInfo()
                     }
             }
             .addOnFailureListener {
                 Toast.makeText(applicationContext, "upload failed", Toast.LENGTH_SHORT).show()
-                getInfo()
+                progressDialog.dismiss()
             }
     }
 
@@ -276,8 +377,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK)
-        {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             val intent: Intent = Intent(this@ProfileActivity, SettingsActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)

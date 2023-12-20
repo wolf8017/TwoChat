@@ -48,7 +48,7 @@ class ContactsAdapter() : RecyclerView.Adapter<ContactsAdapter.Holder>() {
         val user: User = list[position]
 
         holder.username.text = user.userName
-        holder.desc.text = user.bio
+        holder.desc.text = user.userPhone
 
         Glide.with(context).load(user.imageProfile).into(holder.imageProfile)
 

@@ -1,20 +1,26 @@
 package com.wolf8017.twochat.view.activities.dialog
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityOptionsCompat
 import com.bumptech.glide.Glide
 import com.wolf8017.twochat.R
+import com.wolf8017.twochat.common.Common
 import com.wolf8017.twochat.model.ChatList
 import com.wolf8017.twochat.view.activities.chats.ChatsActivity
+import com.wolf8017.twochat.view.activities.display.ViewImageActivity
 import com.wolf8017.twochat.view.activities.profile.UserProfileActivity
 
 class DialogViewUser(
@@ -28,6 +34,8 @@ class DialogViewUser(
     private lateinit var btnCall: ImageButton
     private lateinit var btnVideoCall: ImageButton
     private lateinit var btnInfo: ImageButton
+
+    private lateinit var activityOptionCompat: ActivityOptionsCompat
 
     init {
         initialize(chatList)
@@ -85,6 +93,21 @@ class DialogViewUser(
                     .putExtra("userName", chatList.userName)
             )
             dialog.dismiss()
+        }
+
+        profile.setOnClickListener{
+            profile.invalidate()
+
+            val dr: Drawable = profile.drawable
+            Common.IMAGE_BITMAP = ((dr.current) as? BitmapDrawable)?.bitmap
+
+            if (context is Activity){
+                activityOptionCompat = ActivityOptionsCompat
+                    .makeSceneTransitionAnimation(context as Activity, profile, "image")
+            }
+
+            val intent= Intent(context, ViewImageActivity::class.java)
+            context.startActivity(intent, activityOptionCompat.toBundle())
         }
 
         dialog.show()
