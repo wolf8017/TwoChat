@@ -2,6 +2,7 @@ package com.wolf8017.twochat.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,12 +61,18 @@ class ChatListAdapter() : RecyclerView.Adapter<ChatListAdapter.Holder>() {
         }
 
         holder.itemView.setOnClickListener {
-            context.startActivity(
-                Intent(context, ChatsActivity::class.java)
-                    .putExtra("userID", chatlist.userID)
-                    .putExtra("userName", chatlist.userName)
-                    .putExtra("userProfile", chatlist.urlProfile)
-            )
+            val intent = Intent(context, ChatsActivity::class.java).apply {
+                putExtra("userID", chatlist.userID)
+                putExtra("userName", chatlist.userName)
+                putExtra("userProfile", chatlist.urlProfile)
+
+                // Check if fcmToken is not null before adding it to the intent
+                chatlist.fcmToken?.let {
+                    putExtra("fcmToken", it)
+                }
+
+            }
+            context.startActivity(intent)
         }
 
         holder.profile.setOnClickListener {

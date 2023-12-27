@@ -6,4 +6,5 @@ data class ChatList(
     val description: String,
     val date: String,
     val urlProfile: String,
+    val fcmToken: String? = null,
 )

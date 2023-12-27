@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -16,6 +17,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.databinding.ActivityMainBinding
 import com.wolf8017.twochat.menu.CallsFragment
@@ -28,12 +33,25 @@ import com.wolf8017.twochat.view.activities.settings.SettingsActivity
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: SectionsPagerAdapter
+
+    //Firebase
+    private var user: FirebaseUser? = null
+    private lateinit var firestore: FirebaseFirestore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         setupWithViewPager(binding.viewPager)
         setupTabLayout(binding.tabLayout, binding.viewPager)
         setSupportActionBar(binding.toolbar)
+
+
+        user = FirebaseAuth.getInstance().currentUser
+        firestore = FirebaseFirestore.getInstance()
+
+
+
+        getFCMToken()
 
         //Change Icon on left bottom
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -49,6 +67,19 @@ class MainActivity : AppCompatActivity() {
                 // Implementation for onPageScrollStateChanged
             }
         })
+    }
+
+    private fun getFCMToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener{
+                if (it.isSuccessful)
+                {
+                    val token: String = it.result
+                    firestore.collection("User")
+                        .document(user!!.uid)
+                        .update("fcmToken" , token)
+                }
+            }
     }
 
     private fun setupWithViewPager(viewPager2: ViewPager2) {
@@ -136,5 +167,7 @@ class MainActivity : AppCompatActivity() {
             binding.fabAction.show()
         }, 444) // Replace delayTimeInMillis with the desired delay in milliseconds
     }
+
+
 
 }

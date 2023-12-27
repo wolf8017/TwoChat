@@ -38,6 +38,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.wolf8017.twochat.R
@@ -100,7 +101,11 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.btnLogOut.setOnClickListener {
-            showDialogSignOut()
+            FirebaseMessaging.getInstance().deleteToken()
+                .addOnCompleteListener {
+                    showDialogSignOut()
+                }
+
         }
     }
 

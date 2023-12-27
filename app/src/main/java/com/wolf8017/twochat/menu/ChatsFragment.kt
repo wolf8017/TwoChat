@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.adapter.ChatListAdapter
 import com.wolf8017.twochat.databinding.FragmentChatsBinding
 import com.wolf8017.twochat.model.ChatList
-import java.util.Objects
+import java.text.SimpleDateFormat
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,6 +52,8 @@ class ChatsFragment : Fragment() {
 
     private var list: MutableList<ChatList> = mutableListOf()
     private var allUserID: MutableList<String> = mutableListOf()
+
+
     private lateinit var adapter: ChatListAdapter
 
     private lateinit var binding: FragmentChatsBinding
@@ -70,7 +74,7 @@ class ChatsFragment : Fragment() {
         firestore = FirebaseFirestore.getInstance()
 
         if (user != null) {
-            getChatList();
+            getChatList()
         }
 
         return binding.root
@@ -82,15 +86,22 @@ class ChatsFragment : Fragment() {
         reference.child("ChatList").child(user!!.uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    list.clear()
-                    allUserID.clear()
-                    for (snapshot in dataSnapshot.children) {
-                        val userID: String = Objects.requireNonNull(snapshot.child("chatId").value).toString()
+                    if (dataSnapshot.value != null) {
+                        list.clear()
+                        allUserID.clear()
+                        for (snapshot in dataSnapshot.children) {
 
+                            val userID: String = Objects.requireNonNull(snapshot.child("chatId").value).toString()
+                            binding.progressCircular.visibility = View.GONE
+                            binding.lnInvite.visibility = View.GONE
+
+                            allUserID.add(userID)
+                        }
+                        getUserData()
+                    } else {
                         binding.progressCircular.visibility = View.GONE
-                        allUserID.add(userID)
+                        binding.lnInvite.visibility = View.VISIBLE
                     }
-                    getUserData()
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -105,24 +116,12 @@ class ChatsFragment : Fragment() {
             for (userID in allUserID) {
                 firestore.collection("User").document(userID)
                     .get()
-                    .addOnSuccessListener {
+                    .addOnSuccessListener { userSnapshot ->
                         try {
-                            val chat: ChatList = ChatList(
-                                it["userID"].toString(),
-                                it["userName"].toString(),
-                                "This is description",
-                                "",
-                                it["imageProfile"].toString(),
-                            )
-                            list.add(chat)
+                            processUserSnapshot(userSnapshot, userID)
                         } catch (e: Exception) {
                             Log.d("ChatsFragment", "onSuccess: ${e.message}")
                         }
-                        adapter.notifyItemInserted(0)
-                        adapter.notifyDataSetChanged()
-
-                        Log.d("ChatsFragment", "onSuccess: adapter ${adapter.itemCount}")
-
                     }
                     .addOnFailureListener {
                         Log.d("ChatsFragment", "onFailure: Error ${it.message}")
@@ -130,6 +129,72 @@ class ChatsFragment : Fragment() {
             }
         }
     }
+
+    private fun processUserSnapshot(userSnapshot: DocumentSnapshot, userID: String) {
+        val userName = userSnapshot["userName"].toString()
+        val imageProfile = userSnapshot["imageProfile"].toString()
+        val fcmToken = userSnapshot["fcmToken"].toString()
+
+        reference.child("ChatList").child(user!!.uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val chatListData = processChatListSnapshot(dataSnapshot)
+
+                    val formattedTimestamp = createTimestamp(chatListData.timestamp)
+
+                    val chat = if (chatListData.senderID != userID) {
+                        ChatList(userID, userName, "You: ${chatListData.lastMessage}", formattedTimestamp, imageProfile, fcmToken)
+                    } else {
+                        ChatList(userID, userName, chatListData.lastMessage, formattedTimestamp, imageProfile, fcmToken)
+                    }
+
+                    list.add(chat)
+                    adapter.notifyItemInserted(0)
+                    adapter.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.d("ChatsFragment", "onCancelled: Error ${error.message}")
+                }
+            })
+    }
+
+    private fun processChatListSnapshot(dataSnapshot: DataSnapshot): ChatListData {
+        var lastMessage = ""
+        var senderID = ""
+        var timestamp = 0L
+
+        for (snapshot in dataSnapshot.children) {
+            lastMessage = snapshot.child("lastMessage").value.toString()
+            senderID = snapshot.child("senderId").value.toString()
+            timestamp = snapshot.child("timestamp").value.toString().toLong()
+        }
+
+        return ChatListData(lastMessage, senderID, timestamp)
+    }
+
+    data class ChatListData(val lastMessage: String, val senderID: String, val timestamp: Long)
+
+    private fun createTimestamp(messageTimestamp: Long): String {
+        val currentDate = Calendar.getInstance()
+        val messageDate = Calendar.getInstance()
+        messageDate.timeInMillis = messageTimestamp
+
+        return if (isSameDay(currentDate, messageDate)) {
+            // Within the same day, show only the time
+            SimpleDateFormat("HH:mm", Locale.getDefault()).format(messageDate.time)
+        } else {
+            // Different day, show both date and time
+            SimpleDateFormat("dd-MM-yy HH:mm", Locale.getDefault()).format(messageDate.time)
+        }
+    }
+
+    private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {
+        return cal1[Calendar.YEAR] == cal2[Calendar.YEAR] &&
+                cal1[Calendar.MONTH] == cal2[Calendar.MONTH] &&
+                cal1[Calendar.DAY_OF_MONTH] == cal2[Calendar.DAY_OF_MONTH]
+    }
+
 
     companion object {
         /**

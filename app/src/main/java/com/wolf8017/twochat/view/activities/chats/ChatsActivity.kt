@@ -19,13 +19,15 @@ import com.bumptech.glide.Glide
 import com.devlomi.record_view.OnRecordListener
 import android.Manifest
 import android.content.Context
-import android.content.DialogInterface.OnClickListener
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.Vibrator
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.remote.WriteStream.Callback
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.adapter.ChatsAdapter
 import com.wolf8017.twochat.adapter.MessageAdapter
@@ -37,6 +39,10 @@ import com.wolf8017.twochat.model.chat.MessageModel
 import com.wolf8017.twochat.services.FirebaseService
 import com.wolf8017.twochat.view.activities.dialog.DialogReviewSendImage
 import com.wolf8017.twochat.view.activities.profile.UserProfileActivity
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 import java.util.UUID
@@ -47,6 +53,7 @@ class ChatsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatsBinding
 
     private lateinit var receiverID: String
+    private lateinit var fcmToken: String
 
     //    private lateinit var senderID: String
     private lateinit var userProfile: String
@@ -87,6 +94,9 @@ class ChatsActivity : AppCompatActivity() {
         userName = intent.getStringExtra("userName").toString()
         receiverID = intent.getStringExtra("userID").toString()
         userProfile = intent.getStringExtra("userProfile").toString()
+        fcmToken = intent.getStringExtra("fcmToken").toString()
+
+        Log.d("Test Token", "initialize: $receiverID")
 
         binding.tvUsername.text = userName
 
@@ -194,7 +204,9 @@ class ChatsActivity : AppCompatActivity() {
     private fun initBtnClick() {
         binding.btnSend.setOnClickListener {
             if (!TextUtils.isEmpty(binding.edMessage.text.toString())) {
-                chatService.sendTextMsg(binding.edMessage.text.toString())
+                val text: String = binding.edMessage.text.toString()
+                chatService.sendTextMsg(text)
+                sendNotification(text, fcmToken)
                 binding.edMessage.setText("")
             }
         }
@@ -267,6 +279,7 @@ class ChatsActivity : AppCompatActivity() {
                         override fun onUploadSuccess(imageUrl: String) {
                             // to send chat image
                             chatService.sendImage(imageUrl)
+                            sendNotification("Sent an image", fcmToken)
                             progressDialog.dismiss()
                         }
 
@@ -293,8 +306,14 @@ class ChatsActivity : AppCompatActivity() {
                 // Notify the adapter about the new data
                 chatAdapter.notifyItemInserted(list.size - 1)
 
-                // Scroll to the newly added item
-                recyclerView.smoothScrollToPosition(list.size - 1)
+                if(list.size < 1)
+                {
+                    recyclerView.smoothScrollToPosition(0)
+                }
+                else{
+                    // Scroll to the newly added item
+                    recyclerView.smoothScrollToPosition(list.size - 1)
+                }
             }
 
             override fun onReadFailed() {
@@ -363,6 +382,7 @@ class ChatsActivity : AppCompatActivity() {
                 mediaRecorder = null
                 // sendVoice()  // Uncomment this line if sendVoice() is implemented
                 chatService.sendVoice(audio_path)
+                sendNotification("Sent a voice", fcmToken)
             } ?: Toast.makeText(applicationContext, "MediaRecorder is null", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
             Toast.makeText(applicationContext, "Stop recording error: ${e.message}", Toast.LENGTH_LONG).show()
@@ -389,5 +409,79 @@ class ChatsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.d("ChatsActivity", "setUpMediaRecorder: ${e.message}")
         }
+    }
+
+    private fun sendNotification(text: String, token: String) {
+        var user = FirebaseAuth.getInstance().currentUser!!
+        val firestore = FirebaseFirestore.getInstance()
+
+        firestore.collection("User")
+            .document(user.uid)
+            .get()
+            .addOnCompleteListener {
+                if (it.isSuccessful)
+                {
+                    val userName: String = it.result.getString("userName").toString()
+                    try {
+                        val jsonObject = JSONObject()
+                        val notificationObj = JSONObject()
+
+                        notificationObj.put("title", userName)
+                        notificationObj.put("body", text)
+
+                        val dataObj = JSONObject()
+                        dataObj.put("userID", user.uid)
+
+                        jsonObject.put("notification", notificationObj)
+                        jsonObject.put("data", dataObj)
+                        jsonObject.put("to", token)
+
+                        callAPI(jsonObject)
+                    }catch (e: IOException)
+                    {
+                        e.printStackTrace()
+                    }
+                }
+            }
+    }
+
+    fun callAPI(jsonObject: JSONObject) {
+        // Define the media type for JSON
+        val JSON = "application/json".toMediaType()
+
+        // Create an OkHttpClient instance
+        val client = OkHttpClient()
+
+        // Specify the URL for the FCM endpoint
+        val url = "https://fcm.googleapis.com/fcm/send"
+
+        // Create a RequestBody from the JSON object
+        val body: RequestBody = jsonObject.toString().toRequestBody(JSON)
+
+        // Create a Request with the URL, RequestBody, and Authorization header
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .header("Authorization", "Bearer AAAALNE1nYs:APA91bHcfa09pAwyPCLsvxt6o9Q1eKYFrgNwjAQCy-Pnq8NgPjR1CslzHTiY-ZYCRMTAomo__bWPO-iwTMWMEKOjeKBoKPgTLBCOEnL-lIGbVly-_n5ycvhCchM8zq7nVKw7hrP9ZQz6")
+            .build()
+
+        // Use enqueue for asynchronous execution
+        client.newCall(request).enqueue(object : okhttp3.Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // Handle failure
+                println("Request failed: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                // Handle response
+                if (response.isSuccessful) {
+                    println("Request successful: ${response.body?.string()}")
+                } else {
+                    println("Request failed with code: ${response.code}")
+                }
+                // Don't forget to close the response
+                response.close()
+            }
+        })
     }
 }

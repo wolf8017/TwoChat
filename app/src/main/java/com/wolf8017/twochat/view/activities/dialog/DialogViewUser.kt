@@ -74,6 +74,7 @@ class DialogViewUser(
                     .putExtra("userID", chatList.userID)
                     .putExtra("userName", chatList.userName)
                     .putExtra("userProfile", chatList.urlProfile)
+                    .putExtra("fcmToken", chatList.fcmToken)
             )
             dialog.dismiss()
         }

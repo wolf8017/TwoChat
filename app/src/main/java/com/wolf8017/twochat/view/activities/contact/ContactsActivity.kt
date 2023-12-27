@@ -166,7 +166,8 @@ class ContactsActivity : AppCompatActivity() {
                         "",
                         "",
                         "",
-                        desc ?: ""
+                        desc ?: "",
+                        ""
                     )
 
                     if (userID != firebaseUser?.uid

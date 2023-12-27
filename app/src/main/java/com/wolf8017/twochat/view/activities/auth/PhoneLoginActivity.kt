@@ -142,20 +142,13 @@ class PhoneLoginActivity : AppCompatActivity() {
                 progressDialog.dismiss()
                 Log.d(TAG, "signInWithCredential:success")
                 val user = task.result?.user
-                if (user != null) {
-                    firestore.collection("User").document(user.uid)
-                        .get()
-                        .addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                startActivity(Intent(this@PhoneLoginActivity, MainActivity::class.java))
-                            } else {
-                                startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
-                            }
-                        }
+                val isNewUser = task.result?.additionalUserInfo?.isNewUser
+                if (isNewUser == true) {
+                    startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
                 } else {
-                    // Handle the case where user is null
+                    startActivity(Intent(this@PhoneLoginActivity, MainActivity::class.java))
                 }
-
+//                startActivity(Intent(this@PhoneLoginActivity, SetUserInfoActivity::class.java))
             } else {
                 progressDialog.dismiss()
                 // Sign in failed, display a message and update the UI

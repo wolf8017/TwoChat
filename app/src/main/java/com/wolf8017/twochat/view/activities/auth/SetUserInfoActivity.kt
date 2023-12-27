@@ -38,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.wolf8017.twochat.R
 import com.wolf8017.twochat.databinding.ActivitySetUserInfoBinding
+import com.wolf8017.twochat.model.user.User
 import com.wolf8017.twochat.view.MainActivity
 import java.io.FileDescriptor
 import java.io.IOException
@@ -67,7 +68,13 @@ class SetUserInfoActivity : AppCompatActivity() {
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     val factory = Editable.Factory.getInstance()
-                    binding.edName.text = factory.newEditable(it.result.getString("userName"))
+                    val userName: String? = it.result.getString("userName")
+
+                    if (userName.isNullOrEmpty()) {
+                        binding.edName.text = factory.newEditable("")
+                    } else {
+                        binding.edName.text = factory.newEditable(it.result.getString("userName"))
+                    }
 
                     val imageProfile: String? = it.result.getString("imageProfile")
 
@@ -96,7 +103,7 @@ class SetUserInfoActivity : AppCompatActivity() {
             if (TextUtils.isEmpty(binding.edName.text.toString())) {
                 Toast.makeText(applicationContext, "Please input your name!!!", Toast.LENGTH_SHORT).show()
             } else {
-//                doUpdate()
+                doUpdate()
                 uploadToFirebase()
             }
         }
@@ -107,7 +114,7 @@ class SetUserInfoActivity : AppCompatActivity() {
         }
     }
 
-    /*private fun doUpdate() {
+    private fun doUpdate() {
         progressDialog.setMessage("Please wait...")
         progressDialog.show()
 
@@ -116,9 +123,10 @@ class SetUserInfoActivity : AppCompatActivity() {
 
         if (firebaseUser != null) {
             val userID: String = firebaseUser.uid
-            val users: User = User(
+            val users = User(
                 userID, binding.edName.text.toString(),
                 firebaseUser.phoneNumber.toString(),
+                "",
                 "",
                 "",
                 "",
@@ -143,7 +151,7 @@ class SetUserInfoActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "You need to login first", Toast.LENGTH_SHORT).show()
             progressDialog.dismiss()
         }
-    }*/
+    }
 
     @SuppressLint("InflateParams", "ObsoleteSdkInt")
     private fun showBottomSheetPickPhoto() {
